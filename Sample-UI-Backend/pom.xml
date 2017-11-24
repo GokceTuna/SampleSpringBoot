@@ -109,4 +109,12 @@
 		</plugins>
 	</build>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>AkbankTest</id>
+			<name>AkbankTest</name>
+			<url>http://10.215.52.211:8081/repository/AkbankTest/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>
