@@ -9,7 +9,7 @@ public abstract class BaseController {
 	private ApplicationContext mOBApplicationContext;
 
 	public static final String SLASH = "/";
-	public static final String PATH_ROOT = SLASH;
+	public static final String PATH_ROOT = "";
 
 	public BaseController() {
 		super();

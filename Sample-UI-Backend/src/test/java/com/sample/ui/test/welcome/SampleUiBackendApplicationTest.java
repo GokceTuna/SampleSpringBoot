@@ -1,6 +1,7 @@
-package com.sample.ui;
+package com.sample.ui.test.welcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Date;
@@ -21,12 +22,15 @@ import org.springframework.validation.support.BindingAwareModelMap;
 
 import com.sample.shared.welcome.IWelcomePojo;
 import com.sample.shared.welcome.WelcomeConstants;
+import com.sample.ui.BeanNames;
+import com.sample.ui.JaxRsCaller;
+import com.sample.ui.SampleUiBackendApplication;
 import com.sample.ui.welcome.WelcomeController;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SampleUiBackendApplication.class)
 @AutoConfigureMockMvc
-public class SampleUiBackendApplicationTests {
+public class SampleUiBackendApplicationTest {
 
 	@Autowired
 	private ApplicationContext mOBApplicationContext;
@@ -50,12 +54,13 @@ public class SampleUiBackendApplicationTests {
 				lOBMockResponse.getClass())).willReturn(lOBMockResponse);
 
 		BindingAwareModelMap lOBBindingAwareModelMap = new BindingAwareModelMap();
-
-		String lSTResponse = mOBWelcomeController.welcome(lOBBindingAwareModelMap, null);
-		assertThat(lSTResponse).isEqualTo(WelcomeConstants.VIEW_WELCOME);
+		lOBBindingAwareModelMap = (BindingAwareModelMap) mOBWelcomeController.welcome(lOBBindingAwareModelMap, null);
+		
+		assertNotNull(lOBBindingAwareModelMap);
 
 		IWelcomePojo lOBWelcomeResponse = (IWelcomePojo) lOBBindingAwareModelMap
 				.get(WelcomeConstants.VIEW_RESPONSE_WELCOME);
+
 		assertThat(lOBWelcomeResponse.getMessage()).isEqualTo(lOBMockResponse.getMessage());
 	}
 

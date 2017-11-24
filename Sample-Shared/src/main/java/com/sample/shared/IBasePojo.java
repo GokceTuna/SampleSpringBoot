@@ -1,5 +1,7 @@
 package com.sample.shared;
 
-public interface IBasePojo {
+import java.io.Serializable;
+
+public interface IBasePojo extends Serializable {
 
 }

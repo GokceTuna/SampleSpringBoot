@@ -17,6 +17,7 @@ import com.sample.ui.BeanNames;
 import com.sample.ui.JaxRsCaller;
 
 @Controller(BeanNames.BEAN_WELCOME_CONTROLLER)
+@RequestMapping(WelcomeConstants.PATH_TO_CONTROLLER_ROOT)
 public class WelcomeController extends BaseController {
 
 	@Autowired
@@ -24,20 +25,20 @@ public class WelcomeController extends BaseController {
 	private JaxRsCaller mOBJaxRsCaller;
 
 	/**
-	 * Simply selects the home view to render by returning its name.
+	 * Simply selects the home view to render by returning its model object.
 	 * 
 	 * @throws Exception
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = { PATH_ROOT,
 			WelcomeConstants.PATH_TO_VIEW_WITH_PARAM_WELCOME_NAME })
-	public String welcome(Model model,
+	public Model welcome(Model model,
 			@RequestParam(value = WelcomeConstants.PARAM_SUB_VIEW_WELCOME_NAME, required = false) String pSTName)
 			throws Exception {
 
 		IWelcomePojo lOBWelcomeServiceResponse = getWelcomeServiceResponse(pSTName);
 		model.addAttribute(WelcomeConstants.VIEW_RESPONSE_WELCOME, lOBWelcomeServiceResponse);
 
-		return WelcomeConstants.VIEW_WELCOME;
+		return model;
 	}
 
 	private String getWelcomeServiceUrl(String pSTName) {
@@ -49,10 +50,11 @@ public class WelcomeController extends BaseController {
 	}
 
 	private IWelcomePojo getWelcomeServiceResponse(String pSTName) throws Exception {
-		IWelcomePojo lOBWelcomeServiceResponse = (IWelcomePojo) getApplicationContext().getBean(WelcomeConstants.POJO_NAME_WELCOME);
+		IWelcomePojo lOBWelcomeServiceResponse = (IWelcomePojo) getApplicationContext()
+				.getBean(WelcomeConstants.POJO_NAME_WELCOME);
 
-		lOBWelcomeServiceResponse = (IWelcomePojo) mOBJaxRsCaller.getResponse(getWelcomeServiceUrl(pSTName), MediaType.APPLICATION_JSON,
-				lOBWelcomeServiceResponse.getClass());
+		lOBWelcomeServiceResponse = (IWelcomePojo) mOBJaxRsCaller.getResponse(getWelcomeServiceUrl(pSTName),
+				MediaType.APPLICATION_JSON, lOBWelcomeServiceResponse.getClass());
 
 		return lOBWelcomeServiceResponse;
 
