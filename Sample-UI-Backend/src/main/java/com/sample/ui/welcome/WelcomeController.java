@@ -10,19 +10,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.sample.shared.welcome.IWelcomePojo;
-import com.sample.shared.welcome.WelcomeConstants;
+import com.sample.shared.Constants;
+import com.sample.shared.welcome.WelcomePojo;
+import com.sample.shared.welcome.WelcomeUtilities;
 import com.sample.ui.BaseController;
 import com.sample.ui.BeanNames;
 import com.sample.ui.JaxRsCaller;
 
 @Controller(BeanNames.BEAN_WELCOME_CONTROLLER)
-@RequestMapping(WelcomeConstants.PATH_TO_CONTROLLER_ROOT)
+@RequestMapping(Constants.Controllers.WelcomeController.PATH)
 public class WelcomeController extends BaseController {
 
 	@Autowired
 	@Qualifier(BeanNames.BEAN_JAX_RS_CALLER)
 	private JaxRsCaller mOBJaxRsCaller;
+
+	protected final JaxRsCaller getJaxRsCaller() {
+		return mOBJaxRsCaller;
+	}
 
 	/**
 	 * Simply selects the home view to render by returning its model object.
@@ -30,34 +35,40 @@ public class WelcomeController extends BaseController {
 	 * @throws Exception
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = { PATH_ROOT,
-			WelcomeConstants.PATH_TO_VIEW_WITH_PARAM_WELCOME_NAME })
+			Constants.Controllers.WelcomeController.Welcome.PATH_NAME,
+			Constants.Controllers.WelcomeController.Welcome.PATH_ID })
 	public Model welcome(Model model,
-			@RequestParam(value = WelcomeConstants.PARAM_SUB_VIEW_WELCOME_NAME, required = false) String pSTName)
+			@RequestParam(value = Constants.Controllers.WelcomeController.Welcome.PARAM_NAME, required = false) String pSTName,
+			@RequestParam(value = Constants.Controllers.WelcomeController.Welcome.PARAM_ID, required = false) Integer pINId)
 			throws Exception {
 
-		IWelcomePojo lOBWelcomeServiceResponse = getWelcomeServiceResponse(pSTName);
-		model.addAttribute(WelcomeConstants.VIEW_RESPONSE_WELCOME, lOBWelcomeServiceResponse);
+		WelcomePojo lOBWelcomeServiceResponse;
+		if (pINId != null) {
+			lOBWelcomeServiceResponse = getWelcomeServiceResponse(pINId, WelcomeUtilities.TYPE_ID);
+		} else {
+			lOBWelcomeServiceResponse = getWelcomeServiceResponse(pSTName, WelcomeUtilities.TYPE_NAME);
+		}
+		model.addAttribute(Constants.Controllers.WelcomeController.Welcome.RESPONSE, lOBWelcomeServiceResponse);
 
 		return model;
 	}
 
-	private String getWelcomeServiceUrl(String pSTName) {
-		StringBuilder lOBUrl = new StringBuilder(WelcomeConstants.PATH_FULL_TO_SERVICE_WELCOME);
-		if (pSTName != null && !pSTName.isEmpty()) {
-			lOBUrl.append(SLASH).append(pSTName);
-		}
-		return lOBUrl.toString();
-	}
+	/**
+	 * 
+	 * @param pOBParameter
+	 * @param pinType
+	 * @return
+	 * @throws Exception
+	 * 
+	 *             Calls related welcome service and returns the response.
+	 */
+	private WelcomePojo getWelcomeServiceResponse(Object pOBParameter, int pinType) throws Exception {
+		String lSTServiceUrl = WelcomeUtilities.getInstance().getWelcomeServiceUrl(pOBParameter, pinType);
 
-	private IWelcomePojo getWelcomeServiceResponse(String pSTName) throws Exception {
-		IWelcomePojo lOBWelcomeServiceResponse = (IWelcomePojo) getApplicationContext()
-				.getBean(WelcomeConstants.POJO_NAME_WELCOME);
-
-		lOBWelcomeServiceResponse = (IWelcomePojo) mOBJaxRsCaller.getResponse(getWelcomeServiceUrl(pSTName),
-				MediaType.APPLICATION_JSON, lOBWelcomeServiceResponse.getClass());
+		WelcomePojo lOBWelcomeServiceResponse = (WelcomePojo) getJaxRsCaller().getResponse(lSTServiceUrl,
+				MediaType.APPLICATION_JSON, WelcomePojo.class);
 
 		return lOBWelcomeServiceResponse;
-
 	}
 
 }

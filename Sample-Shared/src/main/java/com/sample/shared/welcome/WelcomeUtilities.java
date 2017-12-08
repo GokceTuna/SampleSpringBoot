@@ -1,40 +1,51 @@
 package com.sample.shared.welcome;
 
+import com.sample.shared.Constants;
+
 public class WelcomeUtilities {
 
-	private static final String MESSAGE_HI = "Hi ";
-	private static final String MESSAGE_NAME = "Stranger";
-	private static final String MESSAGE_END = "! Welcome to our workshop.";
+	public static final int TYPE_NAME = 0;
+	public static final int TYPE_ID = 1;
 
-	private static WelcomeUtilities welcomeUtilities;
+	public static final String SLASH = "/";
+
+	private static WelcomeUtilities mOBWelcomeUtilities;
 
 	private WelcomeUtilities() {
 		super();
 	}
 
 	public static final WelcomeUtilities getInstance() {
-		if (welcomeUtilities == null) {
+		if (mOBWelcomeUtilities == null) {
 			synchronized (WelcomeUtilities.class) {
-				if (welcomeUtilities == null) {
-					welcomeUtilities = new WelcomeUtilities();
+				if (mOBWelcomeUtilities == null) {
+					mOBWelcomeUtilities = new WelcomeUtilities();
 				}
 			}
 		}
 
-		return welcomeUtilities;
+		return mOBWelcomeUtilities;
 
 	}
 
-	public String getMessage(String pSTName) {
-		StringBuilder lOBBuilder = new StringBuilder(MESSAGE_HI);
-		if (pSTName == null || pSTName.isEmpty()) {
-			pSTName = MESSAGE_NAME;
+	public String getWelcomeServiceUrl(Object pOBParameter, int pinType) {
+		StringBuilder lOBUrl = new StringBuilder();
+
+		switch (pinType) {
+		case TYPE_ID:
+			lOBUrl.append(Constants.ServiceClients.WELCOME_ID);
+			lOBUrl.append(SLASH).append((Integer) pOBParameter);
+			break;
+
+		default:
+			lOBUrl.append(Constants.ServiceClients.WELCOME);
+			String lSTName = (String) pOBParameter;
+			if (lSTName != null && !lSTName.isEmpty()) {
+				lOBUrl.append(SLASH).append(lSTName);
+			}
+			break;
 		}
-
-		lOBBuilder.append(pSTName).append(MESSAGE_END);
-
-		// Hi {name}! Welcome to our workshop
-		return lOBBuilder.toString();
+		return lOBUrl.toString();
 	}
 
 }
