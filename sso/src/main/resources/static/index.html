@@ -13,7 +13,7 @@
 			<li ng-class="{active:tab('home')}"><a href='#/'>home</a></li>
 			<li ng-class="{active:tab('dashboard')}" ng-show="authenticated"><a href='#/dashboard'>dashboard</a></li>
 			<li><a href='dashboard/login'>login</a></li>
-			<li ng-show="authenticated"><a href='' ng-click="logout()">logout</a></li>
+			<li ng-show="authenticated"><a href='dashboard/logout'>logout</a></li>
 		</ul>
 		<div>Authenticated: {{user}}</div>
 	</div>

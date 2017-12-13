@@ -22,7 +22,6 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -46,16 +45,6 @@ public class SsoApplication {
 		SpringApplication.run(SsoApplication.class, args);
 	}
 
-	@Controller
-	public static class LoginErrors {
-
-		@RequestMapping("/dashboard/login")
-		public String dashboard() {
-			return "redirect:/#/";
-		}
-
-	}
-
 	@Component
 	@EnableOAuth2Sso
 	public static class LoginConfigurer extends WebSecurityConfigurerAdapter {
@@ -64,8 +53,7 @@ public class SsoApplication {
 		public void configure(HttpSecurity http) throws Exception {
 			http.antMatcher("/dashboard/**").authorizeRequests().anyRequest().authenticated().and().csrf()
 					.csrfTokenRepository(csrfTokenRepository()).and()
-					.addFilterAfter(csrfHeaderFilter(), CsrfFilter.class).logout().logoutUrl("/dashboard/logout")
-					.permitAll().logoutSuccessUrl("/");
+					.addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
 		}
 
 		private Filter csrfHeaderFilter() {
@@ -73,6 +61,7 @@ public class SsoApplication {
 				@Override
 				protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 						FilterChain filterChain) throws ServletException, IOException {
+
 					CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 					if (csrf != null) {
 						Cookie cookie = new Cookie("XSRF-TOKEN", csrf.getToken());

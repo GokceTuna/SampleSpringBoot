@@ -53,7 +53,7 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated()
-					.and().logout().permitAll().deleteCookies("XSRF-TOKEN").invalidateHttpSession(true);
+					.and().logout().deleteCookies("XSRF-TOKEN").invalidateHttpSession(true);
 		}
 
 		@Override

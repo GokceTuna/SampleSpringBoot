@@ -8,8 +8,8 @@ security:
     sso:
       login-path: /dashboard/login      
     client:
-      access-token-uri: http://localhost:8080/uaa/oauth/token
-      user-authorization-uri: http://localhost:8080/uaa/oauth/authorize
+      access-token-uri: http://localhost:8085/uaa/oauth/token
+      user-authorization-uri: http://localhost:8085/uaa/oauth/authorize
       scope: myssoclient
       client-id: acme
       client-secret: acmesecret
