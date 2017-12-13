@@ -5,7 +5,7 @@ import java.security.KeyPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -27,11 +27,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@Configuration
-@ComponentScan
-@EnableAutoConfiguration
 @Controller
 @SessionAttributes("authorizationRequest")
+@SpringBootApplication
+@ComponentScan(basePackages = { "com" })
 public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
 	private static final String[] SCOPES_GRANTED = new String[] { "myssoclient" };
@@ -51,33 +50,17 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 	@Order(ManagementServerProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class LoginConfig extends WebSecurityConfigurerAdapter {
 
-		// @Autowired
-		// private AuthenticationManager authenticationManager;
-
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated().and()
-		      .logout().permitAll().deleteCookies("XSRF-TOKEN").invalidateHttpSession(true);
-		      //.logoutUrl("/signout") ;  // Specifies the logout URL, default URL is '/logout'
-//		      .logoutSuccessHandler((req,res,auth)->{   // Logout handler called after successful logout 
-//		          req.getSession().setAttribute("message", "You are logged out successfully.");
-//		          res.sendRedirect("/login"); // Redirect user to login page with message.
-//		       });
-
+			http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated()
+					.and().logout().permitAll().deleteCookies("XSRF-TOKEN").invalidateHttpSession(true);
 		}
 
-		// @Override
-		// protected void configure(AuthenticationManagerBuilder auth) throws Exception
-		// {
-		// auth.parentAuthenticationManager(authenticationManager);
-		// }
-
-		
 		@Override
 		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-			auth.inMemoryAuthentication().withUser("x").password("x").roles("USER").and()
-					.withUser("manager").password("password").credentialsExpired(false).accountExpired(false)
-					.accountLocked(false).authorities("WRITE_PRIVILEGES", "READ_PRIVILEGES").roles("MANAGER");
+			auth.inMemoryAuthentication().withUser("x").password("x").roles("USER").and().withUser("manager")
+					.password("password").credentialsExpired(false).accountExpired(false).accountLocked(false)
+					.authorities("WRITE_PRIVILEGES", "READ_PRIVILEGES").roles("MANAGER");
 		}
 
 	}

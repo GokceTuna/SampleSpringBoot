@@ -13,12 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.cloud.security.oauth2.sso.EnableOAuth2Sso;
-import org.springframework.cloud.security.oauth2.sso.OAuth2SsoConfigurerAdapter;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -29,12 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Configuration
-@ComponentScan
-@EnableAutoConfiguration
+@SpringBootApplication
 @RestController
 @RequestMapping("/dashboard")
-@EnableOAuth2Sso
 public class SsoApplication {
 
 	@RequestMapping("/message")
@@ -62,18 +57,15 @@ public class SsoApplication {
 	}
 
 	@Component
-	public static class LoginConfigurer extends OAuth2SsoConfigurerAdapter {
-
-		@Override
-		public void match(RequestMatchers matchers) {
-			matchers.antMatchers("/dashboard/**");
-		}
+	@EnableOAuth2Sso
+	public static class LoginConfigurer extends WebSecurityConfigurerAdapter {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			http.antMatcher("/dashboard/**").authorizeRequests().anyRequest().authenticated().and().csrf()
 					.csrfTokenRepository(csrfTokenRepository()).and()
-					.addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
+					.addFilterAfter(csrfHeaderFilter(), CsrfFilter.class).logout().logoutUrl("/dashboard/logout")
+					.permitAll().logoutSuccessUrl("/");
 		}
 
 		private Filter csrfHeaderFilter() {
