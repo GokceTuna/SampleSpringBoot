@@ -8,11 +8,6 @@ management:
   security:
     role: USER, MANAGER
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-    com.netflix.discovery: 'OFF'
-
 spring:
   oauth2:
     sso:

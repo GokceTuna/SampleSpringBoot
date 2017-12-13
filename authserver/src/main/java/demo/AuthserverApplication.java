@@ -56,7 +56,14 @@ public class AuthserverApplication extends WebMvcConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated();
+			http.formLogin().loginPage("/login").permitAll().and().authorizeRequests().anyRequest().authenticated().and()
+		      .logout().permitAll().deleteCookies("XSRF-TOKEN").invalidateHttpSession(true);
+		      //.logoutUrl("/signout") ;  // Specifies the logout URL, default URL is '/logout'
+//		      .logoutSuccessHandler((req,res,auth)->{   // Logout handler called after successful logout 
+//		          req.getSession().setAttribute("message", "You are logged out successfully.");
+//		          res.sendRedirect("/login"); // Redirect user to login page with message.
+//		       });
+
 		}
 
 		// @Override

@@ -18,7 +18,6 @@ import org.springframework.cloud.security.oauth2.sso.EnableOAuth2Sso;
 import org.springframework.cloud.security.oauth2.sso.OAuth2SsoConfigurerAdapter;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -40,7 +39,7 @@ public class SsoApplication {
 
 	@RequestMapping("/message")
 	public Map<String, Object> dashboard() {
-		return Collections.<String, Object> singletonMap("message", "Yay!");
+		return Collections.<String, Object>singletonMap("message", "Yay!");
 	}
 
 	@RequestMapping("/user")
@@ -49,21 +48,17 @@ public class SsoApplication {
 	}
 
 	public static void main(String[] args) {
-		StandardEnvironment environment = new StandardEnvironment();
-		if (!environment.acceptsProfiles("cloud", "github")) {
-			environment.addActiveProfile("local");
-		}
 		SpringApplication.run(SsoApplication.class, args);
 	}
-	
+
 	@Controller
 	public static class LoginErrors {
-		
+
 		@RequestMapping("/dashboard/login")
 		public String dashboard() {
 			return "redirect:/#/";
 		}
-		
+
 	}
 
 	@Component
@@ -76,8 +71,7 @@ public class SsoApplication {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/dashboard/**").authorizeRequests().anyRequest()
-					.authenticated().and().csrf()
+			http.antMatcher("/dashboard/**").authorizeRequests().anyRequest().authenticated().and().csrf()
 					.csrfTokenRepository(csrfTokenRepository()).and()
 					.addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
 		}
@@ -85,16 +79,14 @@ public class SsoApplication {
 		private Filter csrfHeaderFilter() {
 			return new OncePerRequestFilter() {
 				@Override
-				protected void doFilterInternal(HttpServletRequest request,
-						HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
-					CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class
-							.getName());
-//					if (csrf != null) {
-//						Cookie cookie = new Cookie("XSRF-TOKEN", csrf.getToken());
-//						cookie.setPath("/");
-//						response.addCookie(cookie);
-//					}
+				protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+						FilterChain filterChain) throws ServletException, IOException {
+					CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+					if (csrf != null) {
+						Cookie cookie = new Cookie("XSRF-TOKEN", csrf.getToken());
+						cookie.setPath("/");
+						response.addCookie(cookie);
+					}
 					filterChain.doFilter(request, response);
 				}
 			};
